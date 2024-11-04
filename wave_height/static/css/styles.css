@@ -1,0 +1,83 @@
+/* Right-Side Button Bar Styling */
+.button-bar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1002; /* Ensure it appears above other elements */
+    display: flex;
+    flex-direction: column; /* Arrange buttons vertically */
+    gap: 10px; /* Spacing between buttons */
+}
+
+/* Icon Button Styling */
+.icon-button {
+    width: 40px; /* Adjust size as needed */
+    height: 40px;
+    border: 2px solid rgb(27, 177, 226); /* Light blue circular border */
+    border-radius: 50%; /* Make the button circular */
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.icon-button:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    border-color: #87CEFA; /* Slightly darker blue on hover */
+}
+
+/* Metadata Section with Increased Transparency */
+#metadata {
+    background-color: rgba(0, 0, 0, 0.2); /* Light semi-transparent background */
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for card effect */
+}
+
+#metadata h2 {
+    margin-top: 0;
+    color: #007bff; /* Title color */
+    font-size: 1.2em;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#metadata ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#metadata li {
+    padding: 5px 0;
+    font-size: 1em;
+    color: #779fe0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Charts Section with Increased Transparency */
+#charts {
+    background-color: rgba(0, 0, 0, 0.2); /* Same transparent background */
+    border-radius: 8px;
+    padding: 15px;
+    color: #333333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for card effect */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#charts h2 {
+    color: #007bff; /* Title color */
+    font-size: 1.2em;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Style individual charts within #charts */
+#charts canvas {
+    display: block;
+    margin: 15px auto; /* Center each chart */
+    max-width: 100%;
+    max-height: 300px; /* Set max height to prevent overflow */
+}

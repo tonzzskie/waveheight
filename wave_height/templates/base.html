@@ -1,0 +1,40 @@
+<!-- wave_height/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- Link to custom styles -->
+</head>
+<body>
+
+    <!-- Top-Left Button Bar with Image Buttons -->
+    <div class="button-bar">
+        <a href="#">
+            <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="icon-button">
+        </a>
+        {% if page != 'earth_map' %}
+            <a href="#" onclick="togglePanel()">
+                <img src="{{ url_for('static', filename='images/data-lake.png') }}" alt="Marine Data" class="icon-button">
+            </a>
+        {% endif %}
+        {% if page != 'earth_map' %}
+            <a href="{{ url_for('earth_map') }}">
+                <img src="{{ url_for('static', filename='images/wave.png') }}" alt="Earth Map" class="icon-button">
+            </a>
+        {% endif %}
+        {% if page != 'leaflet_map' %}
+        <a href="{{ url_for('leaflet_map') }}">
+            <img src="{{ url_for('static', filename='images/plat.png') }}" alt="Leaflet Map" class="icon-button">
+        </a>
+        {% endif %}
+    </div>
+
+    {% block content %}{% endblock %}
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script> <!-- Link to custom JavaScript -->
+</body>
+</html>

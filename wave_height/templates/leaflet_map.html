@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="leafletMap"></div>
+
+<!-- Sidebar for displaying Marine API data -->
+<div id="marineDataPanel" class="sidebar">
+    <h1 style="display:none;"> Wave Height Data </h1>
+    <form id="coordinateForm" method="get" style="display:none;">
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" value="{{ latitude }}" readonly>
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" value="{{ longitude }}" readonly>
+    </form>
+
+    <div id="metadata">
+        <h2>Location Information:</h2>
+        <ul>
+            <li><strong>Latitude:</strong> {{ info_data.latitude }}</li>
+            <li><strong>Longitude:</strong> {{ info_data.longitude }}</li>
+            <li><strong>Timezone:</strong> {{ info_data.timezone }}</li>
+            <li><strong>Elevation:</strong> {{ info_data.elevation }} meters</li>
+        </ul>
+    </div>
+
+    <!-- Chart Container -->
+    <div id="charts">
+        <h2>Wave Data Charts</h2>
+        <canvas id="waveHeightChart"></canvas>
+        <canvas id="waveDirectionChart"></canvas>
+        <canvas id="wavePeriodChart"></canvas>
+    </div>
+
+
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* Style the sidebar panel */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        right: -400px; /* Initially hidden off-screen */
+        width: 350px;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+        color: white;
+        padding: 20px;
+        overflow-y: auto;
+        transition: right 0.3s ease;
+        z-index: 1001; /* Ensure the sidebar is above the map */
+    }
+
+    /* Style the button to open the panel */
+    #openPanelBtn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1002; /* Ensure the button is above the sidebar and map */
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    #openPanelBtn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Adjust the map display to take up the full width */
+    #leafletMap {
+        width: 100%;
+        height: 100vh;
+    }
+</style>
+
+
+
+<script>
+    let map;
+
+    function initMap() {
+        map = L.map('leafletMap').setView([11.654916, 124.265899], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+
+            // Submit form to refresh data based on new coordinates
+            document.getElementById("coordinateForm").submit();
+        });
+    }
+
+    window.onload = initMap;
+
+    // Data from the server-side (Python)
+    const timeData = {{ hourly_data.hourly.time | tojson }};
+    const waveHeightData = {{ hourly_data.hourly.wave_height | tojson }};
+    const waveDirectionData = {{ hourly_data.hourly.wave_direction | tojson }};
+    const wavePeriodData = {{ hourly_data.hourly.wave_period | tojson }};
+
+    // Helper function to format time strings for better readability
+    function formatTimeLabels(timeArray) {
+        return timeArray.map(time => {
+            const date = new Date(time);
+            return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+        });
+    }
+
+    // Prepare chart labels
+    const labels = formatTimeLabels(timeData);
+
+    // Create Wave Height Chart
+    new Chart(document.getElementById('waveHeightChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Wave Height (m)',
+                data: waveHeightData,
+                fill: false,
+                borderColor: 'blue',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: false,  // Hide x-axis labels
+                },
+                y: { 
+                    display: true, 
+                    title: { display: true, text: 'Height (m)' }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,  // Keep tooltip enabled for hover interaction
+                    callbacks: {
+                        label: function(context) {
+                            // Customize tooltip to show time and value
+                            const time = context.label;
+                            const value = context.raw;
+                            return `Time: ${time} - Height: ${value} m`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Create Wave Direction Chart
+    new Chart(document.getElementById('waveDirectionChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Wave Direction (°)',
+                data: waveDirectionData,
+                fill: false,
+                borderColor: 'green',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: false,  // Hide x-axis labels
+                },
+                y: { 
+                    display: true, 
+                    title: { display: true, text: 'Direction (°)' }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,  // Keep tooltip enabled for hover interaction
+                    callbacks: {
+                        label: function(context) {
+                            const time = context.label;
+                            const value = context.raw;
+                            return `Time: ${time} - Direction: ${value}°`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Create Wave Period Chart
+    new Chart(document.getElementById('wavePeriodChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Wave Period (s)',
+                data: wavePeriodData,
+                fill: false,
+                borderColor: 'red',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: false,  // Hide x-axis labels
+                },
+                y: { 
+                    display: true, 
+                    title: { display: true, text: 'Period (s)' }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,  // Keep tooltip enabled for hover interaction
+                    callbacks: {
+                        label: function(context) {
+                            const time = context.label;
+                            const value = context.raw;
+                            return `Time: ${time} - Period: ${value} s`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+</script>
+{% endblock %}
