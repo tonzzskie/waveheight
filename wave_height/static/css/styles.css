@@ -35,7 +35,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for card effect */
 }
 
-#metadata h2 {
+#metadata h3 {
     margin-top: 0;
     color: #007bff; /* Title color */
     font-size: 1.2em;
@@ -66,7 +66,7 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
-#charts h2 {
+#charts h3 {
     color: #007bff; /* Title color */
     font-size: 1.2em;
     margin-top: 0;
@@ -74,10 +74,64 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
+
 /* Style individual charts within #charts */
 #charts canvas {
     display: block;
     margin: 15px auto; /* Center each chart */
     max-width: 100%;
     max-height: 300px; /* Set max height to prevent overflow */
+}
+
+    /* Style the sidebar panel */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        right: -400px; /* Initially hidden off-screen */
+        width: 350px;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+        color: white;
+        padding: 20px;
+        overflow-y: auto;
+        transition: right 0.3s ease;
+        z-index: 1001; /* Ensure the sidebar is above the map */
+    }
+
+    /* Style the button to open the panel */
+    #openPanelBtn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1002; /* Ensure the button is above the sidebar and map */
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    #openPanelBtn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Adjust the map display to take up the full width */
+    #leafletMap {
+        width: 100%;
+        height: 100vh;
+    }
+
+.logout-button {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* overflow: hidden; Prevents scrolling */
 }
