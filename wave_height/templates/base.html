@@ -10,26 +10,28 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- Link to custom styles -->
 </head>
-<body>
+<body class="{% if 'user_id' in session %}logged-in{% endif %}">
 
     <!-- Top-Left Button Bar with Image Buttons -->
     <div class="button-bar">
-        <!-- Account Button: Links to login if user is not logged in -->
-        {% if 'user_id' not in session %}
-            <a href="{{ url_for('login') }}">
-        {% else %}
-            <a href="#">
-        {% endif %}
-            <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="icon-button">
-        </a>
-
-        <!-- Marine Data Button, only if not on Earth Map page -->
-        {% if page != 'earth_map' %}
-            <a href="#" onclick="togglePanel()">
-                <img src="{{ url_for('static', filename='images/data-lake.png') }}" alt="Marine Data" class="icon-button">
+        {% if page not in ['register', 'login'] %}
+            <!-- Account Button: Links to login if user is not logged in -->
+            {% if 'user_id' not in session %}
+                <a href="{{ url_for('login') }}">
+            {% else %}
+                <a href="#">
+            {% endif %}
+                <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="icon-button">
             </a>
+            
+            <!-- Marine Data Button, only if not on Earth Map page -->
+            {% if page != 'earth_map' %}
+                <a href="#" onclick="togglePanel()">
+                    <img src="{{ url_for('static', filename='images/data-lake.png') }}" alt="Marine Data" class="icon-button">
+                </a>
+            {% endif %}
         {% endif %}
-
+        
         <!-- Earth Map Button, only if not on Earth Map page -->
         {% if page != 'earth_map' %}
             <a href="{{ url_for('earth_map') }}">
@@ -44,6 +46,15 @@
             </a>
         {% endif %}
     </div>
+
+    <!-- Bottom-Right Logout Button -->
+    {% if 'user_id' in session and page not in ['register', 'login'] %}
+        <div class="logout-button">
+            <a href="{{ url_for('logout') }}">
+                <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Logout" class="icon-button">
+            </a>
+        </div>
+    {% endif %}
 
     <!-- Flash Messages -->
     <div class="container mt-3">

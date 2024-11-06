@@ -1,7 +1,3 @@
-# wave_height/models.py
-from . import db
-#from werkzeug.security import generate_password_hash, check_password_hash
-
 from . import db
 
 class User(db.Model):
