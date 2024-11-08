@@ -174,3 +174,16 @@ function logInteraction(latitude, longitude, data) {
 
 // Call initMap() after the page loads
 window.onload = initMap;
+
+
+// Automatically hide flash messages after 0.7 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    const flashMessages = document.querySelectorAll('.flash-message');
+    flashMessages.forEach(message => {
+        setTimeout(() => {
+            message.classList.remove('show');
+            message.classList.add('fade');
+            setTimeout(() => message.remove(), 150); // Remove the element after fade-out
+        }, 700); // 0.7 seconds
+    });
+});

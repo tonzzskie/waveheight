@@ -1,11 +1,14 @@
 from . import db
 
+from . import db
+
 class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(50), nullable=False)  # Store plain-text password
+    email = db.Column(db.String(120), unique=True, nullable=False)  # Add email field
+    password_hash = db.Column(db.String(50), nullable=True)  # Now nullable to support OAuth users without passwords
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     # Set password directly

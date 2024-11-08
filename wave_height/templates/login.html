@@ -8,6 +8,7 @@
                     <h3>Login</h3>
                 </div>
                 <div class="card-body">
+                    <!-- Standard Login Form -->
                     <form method="POST" action="{{ url_for('login') }}">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
@@ -19,7 +20,19 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
+
+                    <!-- Divider for Google Sign-In -->
+                    <div class="text-center mt-4 mb-3">
+                        <span>or</span>
+                    </div>
+
+                    <!-- Google Sign-In Button -->
+                    <a href="{{ url_for('google_login') }}" class="btn btn-danger w-100">
+                        <i class="fab fa-google me-2"></i> Sign in with Google
+                    </a>
                 </div>
+
+                <!-- Register Link -->
                 <div class="card-footer text-center">
                     <small>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</small>
                 </div>
@@ -27,4 +40,7 @@
         </div>
     </div>
 </div>
+
+<!-- Font Awesome for Google icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-..." crossorigin="anonymous">
 {% endblock %}
