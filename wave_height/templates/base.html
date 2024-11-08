@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- Link to custom styles -->
+
 </head>
 <body class="{% if 'user_id' in session %}logged-in{% endif %}">
 
@@ -45,6 +47,7 @@
                 <img src="{{ url_for('static', filename='images/plat.png') }}" alt="Leaflet Map" class="icon-button">
             </a>
         {% endif %}
+        
     </div>
 
     <!-- Bottom-Right Logout Button -->
@@ -61,7 +64,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show fade-out" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -74,5 +77,17 @@
     
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script> <!-- Link to custom JavaScript -->
+    <script>
+        // Automatically hide flash messages after 0.7 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashMessages = document.querySelectorAll('.fade-out');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.classList.add('hide');
+                    setTimeout(() => message.remove(), 700); // Remove after fade-out
+                }, 700); // Visible for 0.7 seconds
+            });
+        });
+    </script>
 </body>
 </html>
