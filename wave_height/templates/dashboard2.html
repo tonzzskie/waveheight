@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Wave Data Dashboard</h1>
+
+    {% if total_interactions %}
+    <!-- <div class="row mb-4">
+     
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Total Interactions</h3>
+                <h1>{{ total_interactions }}</h1>
+            </div>
+        </div>
+
+       
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Average Wave Height (m)</h3>
+                <h1>{{ avg_wave_height | round(2) }}</h1>
+            </div>
+        </div>
+
+     
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Average Wave Period (s)</h3>
+                <h1>{{ avg_wave_period | round(2) }}</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+       
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Peak Wave Height (m)</h3>
+                <h1>{{ peak_wave_height | round(2) }}</h1>
+            </div>
+        </div>
+
+       
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Lowest Wave Height (m)</h3>
+                <h1>{{ lowest_wave_height | round(2) }}</h1>
+            </div>
+        </div>
+
+      
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Longest Wave Period (s)</h3>
+                <h1>{{ longest_period | round(2) }}</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+       
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Shortest Wave Period (s)</h3>
+                <h1>{{ shortest_period | round(2) }}</h1>
+            </div>
+        </div>
+
+       
+        <div class="col-md-4">
+            <div class="card shadow p-3 mb-5 bg-body rounded text-center">
+                <h3>Date Range</h3>
+                <h5>From: {{ start_date.strftime('%Y-%m-%d') if start_date else 'N/A' }}</h5>
+                <h5>To: {{ end_date.strftime('%Y-%m-%d') if end_date else 'N/A' }}</h5>
+            </div>
+        </div>
+    </div> -->
+
+    {% else %}
+    <div class="alert alert-warning text-center">
+        No data available to display.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

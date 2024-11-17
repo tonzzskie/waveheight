@@ -1,4 +1,5 @@
 /* Custom animation for fading flash messages */
+
 .fade-out {
     opacity: 1;
     transition: opacity 0.7s ease-out;
@@ -126,6 +127,8 @@
 
     /* Adjust the map display to take up the full width */
     #leafletMap {
+        margin: 0;
+        padding: 0;
         width: 100%;
         height: 100vh;
     }
@@ -137,11 +140,95 @@
     z-index: 1000;
 }
 
-html, body {
+/* html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     /* overflow: hidden; Prevents scrolling */
+
+
+.auth-background {
+    background-image: url("../images/bg.png"); /* Path to your background image */
+    background-size: cover; /* Scale image to cover the full area */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent image repetition */
+    min-height: 100vh; /* Ensure it covers the full viewport height */
+    display: flex; /* Enable centering of content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    padding: 20px; /* Optional padding for better spacing */
+}
+
+.auth-background .card {
+    background: white; /* Ensure the card/form background stays white */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
+    border-radius: 8px; /* Optional rounded corners */
+}
+
+.card-header {
+    padding: 0; /* Remove padding from the parent container */
+    text-align: center; /* Center content horizontally */
+}
+.card-header img {
+    max-height: 200px; /* Adjust size here */
+    margin: 0 auto; /* Optional: Add auto margin */
+    display: inline-block; /* Ensure it's treated as an inline element for text alignment */
+    width: auto;
+    padding: 0;
+}
+
+.animated-counter {
+    font-size: 3rem;
+    color: #007bff;
+    animation: counterPop 1s ease-in-out;
+}
+
+.card {
+    border: 2px solid #007bff;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+@keyframes counterPop {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.register-header {
+    margin: 20px;  /* Add your preferred margin value */
+}
+
+.notification-container {
+    position: fixed;    /* Make the notifications fixed in one place */
+    top: 20px;          /* Position from the top */
+    left: 50%;          /* Center horizontally by positioning from the left */
+    transform: translateX(-50%); /* Move to exact center */
+    z-index: 1050;      /* Ensure it appears above other content */
+    width: auto;
+    max-width: 500px;   /* Optional: control the maximum width */
+    text-align: center; /* Optional: center text alignment */
+}
+
+.notification {
+    margin-bottom: 10px;  /* Add spacing between notifications */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional: add some shadow to make it look elevated */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    display: inline-block; /* Ensure that the notification doesn't take up full container width */
+}
+
+.notification.hide {
+    opacity: 0;           /* Fade out */
+    transform: translateY(-20px);  /* Move up slightly on hiding */
 }
 

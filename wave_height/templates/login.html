@@ -1,40 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3>Login</h3>
-                </div>
-                <div class="card-body">
-                    <!-- Standard Login Form -->
-                    <form method="POST" action="{{ url_for('login') }}">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
+<div class="auth-background">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header text-center p-0">
+                        <!-- Larger Logo with no margin or padding -->
+                        <img  src="{{ url_for('static', filename='images/logo2.png') }}" alt="Logo" class="img-fluid" style="max-height: 200px; width: auto; margin: 0; padding: 0;">
+                    </div>
+                    <div class="card-body">
+                        <!-- Standard Login Form -->
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </form>
 
-                    <!-- Divider for Google Sign-In -->
-                    <div class="text-center mt-4 mb-3">
-                        <span>or</span>
+                        <!-- Divider for Google Sign-In -->
+                        <div class="text-center mt-4 mb-3">
+                            <span>or</span>
+                        </div>
+
+                        <!-- Google Sign-In Button -->
+                        <a href="{{ url_for('google_login') }}" class="btn btn-danger w-100">
+                            <i class="fab fa-google me-2"></i> Sign in with Google
+                        </a>
                     </div>
 
-                    <!-- Google Sign-In Button -->
-                    <a href="{{ url_for('google_login') }}" class="btn btn-danger w-100">
-                        <i class="fab fa-google me-2"></i> Sign in with Google
-                    </a>
-                </div>
-
-                <!-- Register Link -->
-                <div class="card-footer text-center">
-                    <small>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</small>
+                    <!-- Register Link -->
+                    <div class="card-footer text-center">
+                        <small>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</small>
+                    </div>
                 </div>
             </div>
         </div>

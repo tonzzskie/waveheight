@@ -31,3 +31,5 @@ class Interaction(db.Model):
     data = db.Column(db.JSON)  # Store JSON data from the API
 
     user = db.relationship('User', backref=db.backref('interactions', lazy=True))
+
+    print(data)

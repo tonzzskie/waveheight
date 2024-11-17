@@ -8,7 +8,10 @@ from authlib.integrations.flask_client import OAuth
 from flask import render_template, redirect, url_for, session, flash
 from . import db, oauth
 from .models import User
-import os
+from datetime import datetime
+from collections import defaultdict
+from g4f.client import Client
+
 
 # Base API URLs
 BASE_DAILY_API_URL = "https://barmmdrr.com/connect/gmarine_api?daily=wave_height_max,wave_direction_dominant,wave_period_max&timezone=Asia%2FSingapore"
@@ -112,24 +115,62 @@ def logout():
 
 @app.route('/log_interaction', methods=['POST'])
 def log_interaction():
-    # if 'user_id' not in session:
-    #     return jsonify({"error": "User must be logged in to log interactions."}), 403
+    # Validate if user is logged in
+    if 'user_id' not in session:
+        return jsonify({"error": "User must be logged in to log interactions."}), 403
 
     user_id = session['user_id']
     latitude = request.json.get('latitude')
     longitude = request.json.get('longitude')
-    data = request.json.get('data')  # This now holds all hourly data for the day
+    data = request.json.get('data')  # This holds the nested data structure
 
-    # Ensure required data is present
-    if latitude is None or longitude is None:
-        return jsonify({"error": "Latitude and longitude are required."}), 400
+    # Ensure latitude, longitude, and data are present
+    if latitude is None or longitude is None or data is None:
+        return jsonify({"error": "Latitude, longitude, and data are required."}), 400
 
-    # Save the daily data in the database
-    interaction = Interaction(user_id=user_id, latitude=latitude, longitude=longitude, data=data)
+    # Extract the relevant parts of the nested JSON (e.g., hourly wave data)
+    hourly_data = data.get("hourly_data", {})
+    hourly = hourly_data.get("hourly", {})
+    times = hourly.get("time", [])
+    wave_heights = hourly.get("wave_height", [])
+    wave_periods = hourly.get("wave_period", [])
+
+    # Convert times to datetime objects
+    times = [datetime.strptime(t, '%Y-%m-%dT%H:%M') for t in times]
+
+    # Group data by day
+    daily_data = defaultdict(lambda: {'wave_heights': [], 'wave_periods': []})
+    for time, wave_height, wave_period in zip(times, wave_heights, wave_periods):
+        day_key = time.date()  # Group by date (YYYY-MM-DD)
+        daily_data[day_key]['wave_heights'].append(wave_height)
+        daily_data[day_key]['wave_periods'].append(wave_period)
+
+    # Calculate daily metrics
+    daily_metrics = []
+    for day, values in daily_data.items():
+        max_wave_height = max(values['wave_heights'])
+        min_wave_height = min(values['wave_heights'])
+        max_wave_period = max(values['wave_periods'])
+        min_wave_period = min(values['wave_periods'])
+        daily_metrics.append({
+            'day': day,
+            'max_wave_height': max_wave_height,
+            'min_wave_height': min_wave_height,
+            'max_wave_period': max_wave_period,
+            'min_wave_period': min_wave_period
+        })
+
+    # Save the interaction
+    interaction = Interaction(
+        user_id=user_id,
+        latitude=latitude,
+        longitude=longitude,
+        data=data  # Store full JSON in the database for reference
+    )
     db.session.add(interaction)
     db.session.commit()
 
-    return jsonify({"status": "success", "message": "Interaction logged successfully."}), 200
+    return jsonify({"status": "success", "message": "Interaction logged successfully.", "daily_metrics": daily_metrics}), 200
 
 @app.route('/fetch_data')
 def fetch_data():
@@ -194,6 +235,84 @@ def google_callback():
         flash("Authentication failed.", "danger")
         return redirect(url_for('login'))
 
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    interactions = Interaction.query.filter_by(user_id=user_id).all()
+
+    interaction_charts = []
+
+    # Process each interaction to extract daily metrics
+    for interaction in interactions:
+        data = interaction.data
+        hourly = data.get("hourly_data", {}).get("hourly", {})
+        times = hourly.get("time", [])
+        wave_heights = hourly.get("wave_height", [])
+        wave_periods = hourly.get("wave_period", [])
+
+        # Convert times to datetime objects
+        times = [datetime.strptime(t, '%Y-%m-%dT%H:%M') for t in times]
+
+        # Group data by day
+        daily_data = defaultdict(lambda: {'wave_heights': [], 'wave_periods': []})
+        for time, wave_height, wave_period in zip(times, wave_heights, wave_periods):
+            day_key = time.date()  # Group by date (YYYY-MM-DD)
+            daily_data[day_key]['wave_heights'].append(wave_height)
+            daily_data[day_key]['wave_periods'].append(wave_period)
+
+        # Create data for the chart for this interaction
+        chart_data = []
+        for day, values in daily_data.items():
+            max_wave_height = max(values['wave_heights'])
+            min_wave_height = min(values['wave_heights'])
+            max_wave_period = max(values['wave_periods'])
+            min_wave_period = min(values['wave_periods'])
+            chart_data.append({
+                'day': day.strftime('%Y-%m-%d'),
+                'max_wave_height': max_wave_height,
+                'min_wave_height': min_wave_height,
+                'max_wave_period': max_wave_period,
+                'min_wave_period': min_wave_period
+            })
+
+        interaction_charts.append({
+            'interaction_id': interaction.id,
+            'chart_data': chart_data
+        })
+
+    return render_template('dashboard.html',page="dashboard", interaction_charts=interaction_charts, interaction_count=len(interactions), current_date=datetime.now().strftime('%Y-%m-%d'))
+
+@app.route('/analysis_tools', methods=['GET', 'POST'])
+def analysis_tools():
+    response = None
+    if request.method == 'POST':
+        # Get user input from form
+        user_message = request.form.get('userMessage')
+
+        # Run the GPT-4o Mini Analysis Tool
+        client = Client()
+        try:
+            response_obj = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": user_message}]
+            )
+            response = response_obj.choices[0].message.content
+        except Exception as e:
+            response = f"Error while contacting GPT: {e}"
+
+    return render_template('analysis_tools.html', response=response, page="analysis-tools")
 
 
-
+@app.route('/run_analysis_tool', methods=['POST'])
+def run_analysis_tool():
+    # Assuming this is where you process data
+    input_data = request.form.get('input_data')
+    
+    # Placeholder for processing logic
+    result = f"Processing input: {input_data}"
+    
+    # You can modify this to return any response you need
+    return jsonify({'status': 'success', 'result': result})
