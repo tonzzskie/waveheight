@@ -25,7 +25,7 @@
             <a href="{% if 'user_id' in session %}{{ url_for('dashboard') }}{% else %}{{ url_for('login') }}{% endif %}">
                 <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="icon-button">
             </a>
-            <span class="tooltip">Account</span>
+            <span class="tooltip">Profile Account</span>
         </div>
         {% endif %}
         <!-- Marine Data Button, only if not on Earth Map page -->
@@ -34,7 +34,7 @@
             <a href="#" onclick="togglePanel()">
                 <img src="{{ url_for('static', filename='images/data-lake.png') }}" alt="Marine Data" class="icon-button">
             </a>
-            <span class="tooltip">Marine Data</span>
+            <span class="tooltip">Wave Height Data</span>
         </div>
         {% endif %}
 
@@ -44,7 +44,7 @@
             <a href="{{ url_for('earth_map') }}">
                 <img src="{{ url_for('static', filename='images/wave.png') }}" alt="Earth Map" class="icon-button">
             </a>
-            <span class="tooltip">Earth Map</span>
+            <span class="tooltip">Wave Direction</span>
         </div>
         {% endif %}
 
@@ -54,7 +54,7 @@
             <a href="{{ url_for('leaflet_map') }}">
                 <img src="{{ url_for('static', filename='images/plat.png') }}" alt="Leaflet Map" class="icon-button">
             </a>
-            <span class="tooltip">Leaflet Map</span>
+            <span class="tooltip">Interactive Map</span>
         </div>
         {% endif %}
     </div>
