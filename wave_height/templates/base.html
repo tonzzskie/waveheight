@@ -20,33 +20,44 @@
     {% if page not in [ 'dashboard', 'analysis-tools'] %}
     <div class="button-bar">
         {% if page not in ['register', 'login'] %}
-        <!-- Account Button: Links to dashboard if user is logged in, otherwise to login -->
-        <a href="{% if 'user_id' in session %}{{ url_for('dashboard') }}{% else %}{{ url_for('login') }}{% endif %}">
-            <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="icon-button">
-        </a>
+        <!-- Account Button -->
+        <div class="icon-button-container">
+            <a href="{% if 'user_id' in session %}{{ url_for('dashboard') }}{% else %}{{ url_for('login') }}{% endif %}">
+                <img src="{{ url_for('static', filename='images/account.png') }}" alt="Account" class="icon-button">
+            </a>
+            <span class="tooltip">Account</span>
+        </div>
         {% endif %}
         <!-- Marine Data Button, only if not on Earth Map page -->
         {% if page not in ['earth_map', 'register', 'login'] %}
+        <div class="icon-button-container">
             <a href="#" onclick="togglePanel()">
                 <img src="{{ url_for('static', filename='images/data-lake.png') }}" alt="Marine Data" class="icon-button">
             </a>
+            <span class="tooltip">Marine Data</span>
+        </div>
         {% endif %}
-
-        <!-- Earth Map Button, only if not on Earth Map page -->
+        <!-- Earth Map Button -->
         {% if page != 'earth_map' %}
+        <div class="icon-button-container">
             <a href="{{ url_for('earth_map') }}">
                 <img src="{{ url_for('static', filename='images/wave.png') }}" alt="Earth Map" class="icon-button">
             </a>
+            <span class="tooltip">Earth Map</span>
+        </div>
         {% endif %}
-
-        <!-- Leaflet Map Button, only if not on Leaflet Map page -->
+        <!-- Leaflet Map Button -->
         {% if page != 'leaflet_map' %}
+        <div class="icon-button-container">
             <a href="{{ url_for('leaflet_map') }}">
                 <img src="{{ url_for('static', filename='images/plat.png') }}" alt="Leaflet Map" class="icon-button">
             </a>
+            <span class="tooltip">Leaflet Map</span>
+        </div>
         {% endif %}
     </div>
     {% endif %}
+
 
     <!-- Bottom-Right Logout Button -->
     {% if 'user_id' in session and page not in ['register', 'login', 'dashboard', 'analysis-tools'] %}
