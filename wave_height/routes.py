@@ -8,7 +8,7 @@ from authlib.integrations.flask_client import OAuth
 from flask import render_template, redirect, url_for, session, flash
 from . import db, oauth
 from .models import User
-from datetime import datetime
+from datetime import datetime, date 
 from collections import defaultdict
 from g4f.client import Client
 
@@ -115,9 +115,9 @@ def logout():
 
 @app.route('/log_interaction', methods=['POST'])
 def log_interaction():
-    # Validate if user is logged in
-    if 'user_id' not in session:
-        return jsonify({"error": "User must be logged in to log interactions."}), 403
+    # # Validate if user is logged in
+    # if 'user_id' not in session:
+    #     return jsonify({"error": "User must be logged in to log interactions."}), 403
 
     user_id = session['user_id']
     latitude = request.json.get('latitude')
@@ -235,8 +235,11 @@ def google_callback():
         flash("Authentication failed.", "danger")
         return redirect(url_for('login'))
 
+from datetime import date
+
 @app.route('/dashboard')
 def dashboard():
+    # Check if the user is logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
@@ -244,6 +247,7 @@ def dashboard():
     interactions = Interaction.query.filter_by(user_id=user_id).all()
 
     interaction_charts = []
+    notifications = []
 
     # Process each interaction to extract daily metrics
     for interaction in interactions:
@@ -270,6 +274,7 @@ def dashboard():
             min_wave_height = min(values['wave_heights'])
             max_wave_period = max(values['wave_periods'])
             min_wave_period = min(values['wave_periods'])
+
             chart_data.append({
                 'day': day.strftime('%Y-%m-%d'),
                 'max_wave_height': max_wave_height,
@@ -283,7 +288,71 @@ def dashboard():
             'chart_data': chart_data
         })
 
-    return render_template('dashboard.html',page="dashboard", interaction_charts=interaction_charts, interaction_count=len(interactions), current_date=datetime.now().strftime('%Y-%m-%d'))
+    # Use the latest interaction for GPT-4 analysis
+    if interactions:
+        latest_interaction = interactions[-1]  # Assuming the latest interaction is the last one in the list
+
+        # Extract data for analysis prompt
+        data = latest_interaction.data
+        hourly = data.get("hourly_data", {}).get("hourly", {})
+        times = hourly.get("time", [])
+        wave_heights = hourly.get("wave_height", [])
+        wave_periods = hourly.get("wave_period", [])
+
+        # Convert times to datetime objects
+        times = [datetime.strptime(t, '%Y-%m-%dT%H:%M') for t in times]
+
+        # Group data by day
+        daily_data = defaultdict(lambda: {'wave_heights': [], 'wave_periods': []})
+        for time, wave_height, wave_period in zip(times, wave_heights, wave_periods):
+            day_key = time.date()  # Group by date (YYYY-MM-DD)
+            daily_data[day_key]['wave_heights'].append(wave_height)
+            daily_data[day_key]['wave_periods'].append(wave_period)
+
+        # Get the analysis for today's data
+        for day, values in daily_data.items():
+            if day == date.today():
+                max_wave_height = max(values['wave_heights'])
+                max_wave_period = max(values['wave_periods'])
+
+                # Construct a prompt for the GPT-4 client
+                user_message = (
+                    f"Analysis for today's wave data. "
+                    f"The maximum wave height recorded is {max_wave_height} meters and the maximum wave period is {max_wave_period} seconds."
+                    f"Make the answer just a short english paragraph summary of list of numbers like marine activity danger level, examples of recreational activites and travel indications"
+                )
+
+                # Run the GPT-4o Mini Analysis Tool
+                client = Client()
+                try:
+                    response_obj = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[{"role": "user", "content": user_message}]
+                    )
+                    response = response_obj.choices[0].message.content
+                except Exception as e:
+                    response = f"Error while contacting GPT: {e}"
+
+                # Add GPT-4 response as a notification
+                notifications.append({
+                    'message': f'{day.strftime("%Y-%m-%d")} Analysis',
+                    'details': response
+                })
+
+    # If no notifications for today are generated, provide a default notification
+    if not notifications:
+        notifications.append({'message': 'No wave data available for today.', 'details': ''})
+
+    # Render the dashboard with interaction data and notifications
+    return render_template(
+        'dashboard.html',
+        page="dashboard",
+        interaction_charts=interaction_charts,
+        interaction_count=len(interactions),
+        current_date=datetime.now().strftime('%Y-%m-%d'),
+        notifications=notifications
+    )
+
 
 @app.route('/analysis_tools', methods=['GET', 'POST'])
 def analysis_tools():
@@ -316,3 +385,20 @@ def run_analysis_tool():
     
     # You can modify this to return any response you need
     return jsonify({'status': 'success', 'result': result})
+
+@app.route('/delete_interaction/<int:interaction_id>', methods=['POST'])
+def delete_interaction(interaction_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    interaction = Interaction.query.filter_by(id=interaction_id, user_id=session['user_id']).first()
+
+    if not interaction:
+        return jsonify({'error': 'Interaction not found'}), 404
+
+    try:
+        db.session.delete(interaction)
+        db.session.commit()
+        return jsonify({'success': 'Interaction deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': f'Error deleting interaction: {str(e)}'}), 500

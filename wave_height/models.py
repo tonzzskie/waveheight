@@ -1,7 +1,5 @@
 from . import db
 
-from . import db
-
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -28,8 +26,7 @@ class Interaction(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-    data = db.Column(db.JSON)  # Store JSON data from the API
-
+    data = db.Column(db.JSON)  
     user = db.relationship('User', backref=db.backref('interactions', lazy=True))
 
-    print(data)
+    
