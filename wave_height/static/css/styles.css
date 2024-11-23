@@ -50,7 +50,7 @@
 /* Tooltip styling */
 .tooltip {
     position: absolute;
-    left: -125px; /* Position tooltip to the left of the button */
+    left: -130px; /* Position tooltip to the left of the button */
     top: 50%;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
