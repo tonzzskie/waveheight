@@ -27,6 +27,34 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // Initialize the map
+    function initMap() {
+        const map = L.map('leafletMap').setView([11.654916, 124.265899], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Handle map click event
+        map.on('click', function(e) {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+
+            // Fetch updated data based on clicked location
+            fetch(`/fetch_data?latitude=${lat}&longitude=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                    } else {
+                        updateSidebar(data); // Display new data in the sidebar
+                        logInteraction(lat, lng, data); // Log the interaction
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    }
+    
     // Initialize the map when the page loads
     window.onload = function() {
         initMap();
