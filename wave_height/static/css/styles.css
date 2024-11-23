@@ -8,6 +8,17 @@
     opacity: 0;
 }
 
+/* Right-Side Button Bar Styling */
+.button-bar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1002; /* Ensure it appears above other elements */
+    display: flex;
+    flex-direction: column; /* Arrange buttons vertically */
+    gap: 10px; /* Spacing between buttons */
+}
+
 /* Container for each button and tooltip */
 .icon-button-container {
     position: relative;
@@ -15,41 +26,52 @@
     align-items: center;
 }
 
+/* Icon Button Styling */
+.icon-button {
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
+    border: 2px solid rgb(27, 177, 226); /* Light blue circular border */
+    border-radius: 50%; /* Make the button circular */
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.icon-button:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    border-color: #87CEFA; /* Slightly darker blue on hover */
+}
+
+.icon-button:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    border-color: #87CEFA; /* Slightly darker blue on hover */
+}
+
 /* Tooltip styling */
 .tooltip {
     position: absolute;
-    left: -150px; /* Position it to the left of the button */
+    left: -150px; /* Position tooltip to the left of the button */
     top: 50%;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
-    color: #fff; /* White text for visibility */
-    padding: 5px 10px; /* Add padding for better readability */
+    color: #fff; /* White text for better contrast */
+    padding: 5px 10px; /* Padding for readability */
     border-radius: 4px; /* Rounded corners */
     font-size: 0.875em; /* Smaller font size */
     font-family: 'Courier New', Courier, monospace; /* Match existing font */
-    white-space: nowrap; /* Prevent the text from wrapping */
-    opacity: 0; /* Hidden by default */
-    visibility: hidden; /* Ensure it's completely hidden */
-    transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition */
-    z-index: 1003; /* Ensure it appears above other elements */
+    white-space: nowrap; /* Prevent text from wrapping */
+    opacity: 0; /* Initially hidden */
+    visibility: hidden; /* Ensure tooltip is hidden initially */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth fade-in/fade-out */
+    z-index: 1003; /* Ensure it appears above other elements but below the button */
 }
 
 /* Show tooltip when hovering over the icon button container */
 .icon-button-container:hover .tooltip {
-    opacity: 1; /* Show the tooltip */
-    visibility: visible; /* Make it visible */
+    opacity: 1; /* Make tooltip visible */
+    visibility: visible; /* Ensure tooltip becomes visible */
 }
 
-/* Adjust button spacing to keep tooltips from overlapping */
-.button-bar {
-    gap: 15px; /* Increase spacing between buttons */
-}
-
-/* Update button styling for better visual cue */
-.icon-button {
-    position: relative;
-    z-index: 1004; /* Ensure buttons are above tooltips */
-}
 
 /* Metadata Section with Increased Transparency */
 #metadata {

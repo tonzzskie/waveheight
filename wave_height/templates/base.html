@@ -37,7 +37,8 @@
             <span class="tooltip">Marine Data</span>
         </div>
         {% endif %}
-        <!-- Earth Map Button -->
+
+        <!-- Earth Map Button, only if not on Earth Map page -->
         {% if page != 'earth_map' %}
         <div class="icon-button-container">
             <a href="{{ url_for('earth_map') }}">
@@ -46,7 +47,8 @@
             <span class="tooltip">Earth Map</span>
         </div>
         {% endif %}
-        <!-- Leaflet Map Button -->
+
+        <!-- Leaflet Map Button, only if not on Leaflet Map page -->
         {% if page != 'leaflet_map' %}
         <div class="icon-button-container">
             <a href="{{ url_for('leaflet_map') }}">
@@ -57,7 +59,6 @@
         {% endif %}
     </div>
     {% endif %}
-
 
     <!-- Bottom-Right Logout Button -->
     {% if 'user_id' in session and page not in ['register', 'login', 'dashboard', 'analysis-tools'] %}
