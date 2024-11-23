@@ -232,3 +232,11 @@
     transform: translateY(-20px);  /* Move up slightly on hiding */
 }
 
+.nav-link .fa-bell {
+    font-size: 1.25em; /* Adjust icon size */
+}
+
+.dropdown-menu {
+    max-height: 300px; /* Set maximum height for scrolling */
+    overflow-y: auto;  /* Add scroll for overflowing notifications */
+}

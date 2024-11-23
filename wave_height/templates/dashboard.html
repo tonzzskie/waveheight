@@ -3,24 +3,66 @@
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <!-- Navbar Brand as Logo -->
+        <!-- Navbar Brand (logo)-->
         <a class="navbar-brand ps-3" href="{{ url_for('dashboard') }}">
-            <img src="{{ url_for('static', filename='images/wavewatch_white.png') }}" alt="WaveWatch Logo" height="40">
+            <img src="{{ url_for('static', filename='images/wavewatch_white.png') }}" alt="WaveWatch" height="40">
         </a>
- 
-        <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-        
-        <!-- Use ms-auto to push logout link to the far right -->
+    
+        <!-- Sidebar Toggle -->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+            <i class="fas fa-bars"></i>
+        </button>
+    
+        <!-- Right side of Navbar -->
         <ul class="navbar-nav ms-auto">
+
+            <!-- Notification Dropdown -->
+            <li class="nav-item dropdown me-3">
+                <a class="nav-link dropdown-toggle" id="notificationsDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bell"></i> Notifications
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                            <li>
+                                <button class="dropdown-item notification-item" type="button" data-bs-toggle="modal" data-bs-target="#notificationModal" data-message="{{ notification.details }}">
+                                    {{ notification.message }}
+                                </button>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li><button class="dropdown-item" type="button">No new notifications</button></li>
+                    {% endif %}
+                </ul>
+            </li>
+    
+            <!-- Logout Link -->
             <li class="nav-item">
-                <!-- Direct Logout Link -->
                 <a class="nav-link" id="navbarLogout" href="{{ url_for('logout') }}" role="button">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </li>
         </ul>
     </nav>
+
+    <!-- Notification Modal -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notification Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="notificationModalBody">
+                    <!-- Notification content will be inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -44,12 +86,12 @@
                         </a>
 
                         <!-- Settings & Tools Section -->
-                        <div class="sb-sidenav-menu-heading">Settings & Tools</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAlerts" aria-expanded="false" aria-controls="collapseAlerts">
+                        <div class="sb-sidenav-menu-heading">Tools</div>
+                        <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAlerts" aria-expanded="false" aria-controls="collapseAlerts">
                             <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
                             Alerts & Notifications
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
+                        </a> -->
                         <!-- <div class="collapse" id="collapseAlerts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="manage-alerts.html">Manage Alerts</a>
@@ -111,14 +153,19 @@
                         </div>
                     </div>
 
-                    <!-- Charts for Each Interaction -->
                     <div class="row">
                         {% for interaction in interaction_charts %}
                         <div class="col-xl-6">
                             <div class="card mb-4">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-line me-1"></i>
-                                    Interaction {{ interaction.interaction_id }} - Daily Wave Metrics
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-chart-line me-1"></i>
+                                        Interaction {{ interaction.interaction_id }} - Daily Wave Metrics
+                                    </div>
+                                    <!-- Delete Button -->
+                                    <button class="btn btn-danger btn-sm delete-interaction-btn" data-interaction-id="{{ interaction.interaction_id }}">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
                                 </div>
                                 <div class="card-body">
                                     <canvas id="interactionChart{{ interaction.interaction_id }}" width="100%" height="40"></canvas>
@@ -127,6 +174,7 @@
                         </div>
                         {% endfor %}
                     </div>
+                    
                 </div>
             </main>
             <footer class="py-4 bg-light mt-auto">
@@ -143,14 +191,11 @@
             </footer>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="js/datatables-simple-demo.js"></script>
-        <!-- Render Chart.js Chart -->
 
     <!-- Render Chart.js Charts -->
     <script>
@@ -232,6 +277,57 @@
                 });
             });
         });
+                // JavaScript to handle notification modal content
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationItems = document.querySelectorAll('.notification-item');
+            const modalBody = document.getElementById('notificationModalBody');
+
+            notificationItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const message = this.getAttribute('data-message');
+                    modalBody.textContent = message;
+                });
+            });
+        });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Delete Interaction Button Click Handler
+            document.querySelectorAll('.delete-interaction-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const interactionId = this.getAttribute('data-interaction-id');
+                    const cardElement = this.closest('.col-xl-6');
+
+                    // Confirm Deletion
+                    if (!confirm('Are you sure you want to delete this interaction?')) {
+                        return;
+                    }
+
+                    // Make AJAX Request to Delete Interaction
+                    fetch(`/delete_interaction/${interactionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove the interaction card from the DOM
+                            cardElement.remove();
+                        } else {
+                            alert(data.error || 'An error occurred while deleting the interaction.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An unexpected error occurred. Please try again later.');
+                    });
+                });
+            });
+        });
+    </script>
+
+    
 </body>
 {% endblock %}
