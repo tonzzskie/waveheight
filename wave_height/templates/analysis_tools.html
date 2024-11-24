@@ -44,7 +44,7 @@
                         </a>
 
                         <!-- Settings & Tools Section -->
-                        <div class="sb-sidenav-menu-heading">Settings & Tools</div>
+                        <!-- <div class="sb-sidenav-menu-heading">Tools</div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAlerts" aria-expanded="false" aria-controls="collapseAlerts">
                             <div class="sb-nav-link-icon"><i class="fas fa-bell"></i></div>
                             Alerts & Notifications
@@ -55,7 +55,7 @@
                                 <a class="nav-link" href="manage-alerts.html">Manage Alerts</a>
                                 <a class="nav-link" href="custom-thresholds.html">Custom Thresholds</a>
                             </nav>
-                        </div>
+                        </div> -->
                         <!-- <a class="nav-link" href="historical-data.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
                             Historical Data
@@ -101,15 +101,15 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-tools me-1"></i>
-                            GPT-4o Mini Analysis Tool
+                            GPT-4o Mini Tool
                         </div>
                         <div class="card-body">
                             <form action="{{ url_for('analysis_tools') }}" method="post">
                                 <div class="mb-3">
-                                    <label for="userMessage" class="form-label">Enter your message for analysis:</label>
+                                    <label for="userMessage" class="form-label">Enter your message:</label>
                                     <input type="text" id="userMessage" name="userMessage" class="form-control" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Run Analysis</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </form>
                         </div>
                     </div>
